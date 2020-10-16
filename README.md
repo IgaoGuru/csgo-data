@@ -10,11 +10,20 @@ Software for collecting the position of CS:GO player's bounding boxes and export
 
 Free open-source data-collection software for **Counter-Strike: Global Offensive** game. Designed as an internal application - [Dynamic-link library](https://en.wikipedia.org/wiki/Dynamic-link_library) (DLL) loadable into game process. Compatible with the Steam version of the game.
 
-**Although the original software is designed for cheating, this version was developed with the intention of only being used in private matches, causing harm to other player's experience.**
+**Although the original software is designed for cheating, this version was developed with the intention of only being used in private matches, causing no harm to other player's experiences.**
 
 ## Prerequisites
-Microsoft Visual Studio 2019 (preferably the latest version), platform toolset v142 and Windows SDK 10.0.x.x are required in order to compile Osiris. If you don't have ones, you can download VS [here](https://visualstudio.microsoft.com/) (Windows SDK is installed during Visual Studio Setup).
+* Microsoft Visual Studio 2019 (preferably the latest version), platform toolset v142 and Windows SDK 10.0.x.x are required in order to run Osiris. If you don't have ones, you can download VS [here](https://visualstudio.microsoft.com/) (Windows SDK is installed during Visual Studio Setup).
 
+* [Python 8.x](https://python.org) with the following additional libraries:
+  * mss 
+  * numpy 
+  * opencv-python 
+  * pandas 
+After installing python, you can install all the necessary libraries with the following command:
+    ```
+    pip3 install mss numpy opencv-python pandas
+    ```
 <details>
 <summary> Open this if you want to compile from source and modify the code</summary>
 <br>
@@ -81,7 +90,8 @@ Remember to configurate steam to start CS:GO in [insecure mode](https://csgg.in/
 Select the game's instance in the injector, and inject the dll. 
 
 After starting a private match with bots, open the menu with <kbd>INSERT</kbd>, and click on the `ESP` option.
-In the ESP menu, you can enable both enemy and ally bounding boxes.
+
+In the ESP menu, you can enable either enemy and ally bounding boxes (or both at the same time).
 
 ## Acknowledgments
 
@@ -91,6 +101,6 @@ In the ESP menu, you can enable both enemy and ally bounding boxes.
 
 ## License
 
-> Copyright (c) 2018-2020 Daniel Krupiński
+> Copyright (c) 2020-2020 Igor Rocha
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/mit-license.php) - see the [LICENSE](https://github.com/danielkrupinski/Osiris/blob/master/LICENSE) file for details.
