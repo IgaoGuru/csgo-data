@@ -1,4 +1,5 @@
 #include <functional>
+#include <fstream>
 #include <intrin.h>
 #include <string>
 #include <Windows.h>
@@ -50,7 +51,7 @@
 
 static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-    [[maybe_unused]] static const auto once = [](HWND window) noexcept {
+    static const auto once = [](HWND window) noexcept {
         netvars = std::make_unique<Netvars>();
         eventListener = std::make_unique<EventListener>();
         config = std::make_unique<Config>("Osiris");
@@ -86,7 +87,7 @@ static LRESULT __stdcall wndProc(HWND window, UINT msg, WPARAM wParam, LPARAM lP
 
 static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, const RECT* dest, HWND windowOverride, const RGNDATA* dirtyRegion) noexcept
 {
-    [[maybe_unused]] static bool imguiInit{ ImGui_ImplDX9_Init(device) };
+    static bool imguiInit{ ImGui_ImplDX9_Init(device) };
 
     if (config->loadScheduledFonts())
         ImGui_ImplDX9_InvalidateDeviceObjects();
@@ -94,8 +95,19 @@ static HRESULT __stdcall present(IDirect3DDevice9* device, const RECT* src, cons
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-
     StreamProofESP::render();
+
+    /*
+    using namespace std::chrono;
+    std::fstream myfile;
+    myfile.open("E:/ProgramFiles(Terav1)/present.txt", std::fstream::app);
+	auto now = std::chrono::system_clock::now();
+	auto duration = now.time_since_epoch();
+	auto milliney = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    myfile << milliney << "\n";
+    myfile.close();
+    */
+
     Misc::purchaseList();
     Misc::noscopeCrosshair(ImGui::GetBackgroundDrawList());
     Misc::recoilCrosshair(ImGui::GetBackgroundDrawList());
@@ -249,7 +261,7 @@ static void __stdcall paintTraverse(unsigned int panel, bool forceRepaint, bool 
 
 static void __stdcall frameStageNotify(FrameStage stage) noexcept
 {
-    [[maybe_unused]] static auto backtrackInit = (Backtrack::init(), false);
+    static auto backtrackInit = (Backtrack::init(), false);
 
     if (interfaces->engine->isConnected() && !interfaces->engine->isInGame())
         Misc::changeName(true, nullptr, 0.0f);

@@ -16,6 +16,14 @@
 #include <limits>
 #include <tuple>
 
+#include <iostream>
+#include <fstream>
+#include <ios>
+#include "stdlib.h"
+#include <Python.h>
+#include <chrono>
+#include <ctime>
+
 static bool worldToScreen(const Vector& in, ImVec2& out, bool floor = true) noexcept
 {
     const auto& matrix = GameData::toScreenMatrix();
@@ -117,7 +125,13 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
     if (!config.enabled)
         return;
 
-    const ImU32 color = Helpers::calculateColor(config);
+    //IGOR
+    //const ImU32 color = Helpers::calculateColor(config);
+    ImU32 color;
+    color = ((ImU32)IM_F32_TO_INT8_SAT(0)) << IM_COL32_R_SHIFT;
+    color |= ((ImU32)IM_F32_TO_INT8_SAT(0)) << IM_COL32_G_SHIFT;
+    color |= ((ImU32)IM_F32_TO_INT8_SAT(0)) << IM_COL32_B_SHIFT;
+    color |= ((ImU32)IM_F32_TO_INT8_SAT(0)) << IM_COL32_A_SHIFT;
     const ImU32 fillColor = Helpers::calculateColor(config.fill);
 
     switch (config.type) {
@@ -204,6 +218,42 @@ static void renderBox(const BoundingBox& bbox, const Box& config) noexcept
     }
 }
 
+
+//IGOR
+static void playerAnnotate(const PlayerData& playerData, const Player& config) noexcept
+{
+    using namespace std::chrono;
+    if (!config.enabled)
+        return;
+
+    const BoundingBox bbox{ playerData, config.box.scale };
+
+    using namespace std::chrono;
+    std::fstream myfile;
+    myfile.open("E:/ProgramFiles(Terav1)/csgolog.txt", std::fstream::app);
+
+	auto now = std::chrono::system_clock::now();
+	auto duration = now.time_since_epoch();
+	auto milliney = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+    if (
+        (bbox.min.x >= 0) && (bbox.min.x <= 1080)
+        && (bbox.max.x >= 0) && (bbox.max.x <= 1080)
+        && (bbox.min.y >= 0) && (bbox.min.y <= 2560)
+        && (bbox.max.y >= 0) && (bbox.max.y <= 2560)
+        ) {
+		//<< "," << ImGui::GetIO().DisplaySize.x << "," << ImGui::GetIO().DisplaySize.y
+
+        myfile << milliney << "," << GameData::frameney << "," << playerData.enemy 
+			     		   << "," << bbox.min.x << "," << bbox.min.y
+						   << "," << bbox.max.x << "," << bbox.max.y
+		        		   << "\n";
+		
+
+    } 
+    myfile.close();
+}
+
 static ImVec2 renderText(float distance, float cullDistance, const ColorA& textCfg, const char* text, const ImVec2& pos, bool centered = true, bool adjustHeight = true) noexcept
 {
     if (cullDistance && Helpers::units2meters(distance) > cullDistance)
@@ -255,20 +305,15 @@ static void drawSnapline(const Snapline& config, const ImVec2& min, const ImVec2
 struct FontPush {
     FontPush(const std::string& name, float distance)
     {
-        if (const auto it = config->getFonts().find(name); it != config->getFonts().end()) {
-            distance *= GameData::local().fov / 90.0f;
+        distance *= GameData::local().fov / 90.0f;
 
-            ImGui::PushFont([](const Config::Font& font, float dist) {
-                if (dist <= 400.0f)
-                    return font.big;
-                if (dist <= 1000.0f)
-                    return font.medium;
-                return font.tiny;
-            }(it->second, distance));
-        }
-        else {
-            ImGui::PushFont(nullptr);
-        }
+        ImGui::PushFont([](const Config::Font& font, float dist) {
+            if (dist <= 400.0f)
+                return font.big;
+            if (dist <= 1000.0f)
+                return font.medium;
+            return font.tiny;
+            }(config->fonts[name], distance));
     }
 
     ~FontPush()
@@ -326,11 +371,10 @@ static void renderPlayerBox(const PlayerData& playerData, const Player& config) 
         ImVec2 flashDurationPos{ (bbox.min.x + bbox.max.x) / 2, bbox.min.y + offsetMins.y - radius * 1.5f };
 
         const auto color = Helpers::calculateColor(config.flashDuration);
-        constexpr float pi = std::numbers::pi_v<float>;
-        drawList->PathArcTo(flashDurationPos + ImVec2{ 1.0f, 1.0f }, radius, pi / 2 - (playerData.flashDuration / 255.0f * pi), pi / 2 + (playerData.flashDuration / 255.0f * pi), 40);
+        drawList->PathArcTo(flashDurationPos + ImVec2{ 1.0f, 1.0f }, radius, IM_PI / 2 - (playerData.flashDuration / 255.0f * IM_PI), IM_PI / 2 + (playerData.flashDuration / 255.0f * IM_PI), 40);
         drawList->PathStroke(color & IM_COL32_A_MASK, false, 0.9f + radius * 0.1f);
 
-        drawList->PathArcTo(flashDurationPos, radius, pi / 2 - (playerData.flashDuration / 255.0f * pi), pi / 2 + (playerData.flashDuration / 255.0f * pi), 40);
+        drawList->PathArcTo(flashDurationPos, radius, IM_PI / 2 - (playerData.flashDuration / 255.0f * IM_PI), IM_PI / 2 + (playerData.flashDuration / 255.0f * IM_PI), 40);
         drawList->PathStroke(color, false, 0.9f + radius * 0.1f);
 
         offsetMins.y -= radius * 2.5f;
@@ -450,6 +494,7 @@ static bool renderPlayerEsp(const PlayerData& playerData, const Player& playerCo
         return true;
 
     renderPlayerBox(playerData, playerConfig);
+    playerAnnotate(playerData, playerConfig);
     drawPlayerSkeleton(playerConfig.skeleton, playerData.bones);
 
     if (const BoundingBox headBbox{ playerData.headMins, playerData.headMaxs, playerConfig.headBox.scale })

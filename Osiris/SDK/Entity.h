@@ -77,11 +77,17 @@ public:
     VIRTUAL_METHOD(WeaponInfo*, getWeaponData, 460, (), (this))
     VIRTUAL_METHOD(float, getInaccuracy, 482, (), (this))
 
-    auto isPistol() noexcept { return getWeaponType() == WeaponType::Pistol; }
-    auto isSniperRifle() noexcept { return getWeaponType() == WeaponType::SniperRifle; }
-    auto isGrenade() noexcept { return getWeaponType() == WeaponType::Grenade; }
+    constexpr auto isPistol() noexcept
+    {
+        return getWeaponType() == WeaponType::Pistol;
+    }
 
-    auto isFullAuto() noexcept
+    constexpr auto isSniperRifle() noexcept
+    {
+        return getWeaponType() == WeaponType::SniperRifle;
+    }
+
+    constexpr auto isFullAuto() noexcept
     {
         const auto weaponData = getWeaponData();
         if (weaponData)
@@ -89,7 +95,7 @@ public:
         return false;
     }
 
-    auto requiresRecoilControl() noexcept
+    constexpr auto requiresRecoilControl() noexcept
     {
         const auto weaponData = getWeaponData();
         if (weaponData)

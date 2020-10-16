@@ -23,11 +23,9 @@
 * SOFTWARE.
 */
 #pragma once
-
-#include <cassert>
+#include "platform.hpp"
 #include <cstring>
-
-#include "Platform.hpp"
+#include <cassert>
 
 class table_hook
 {

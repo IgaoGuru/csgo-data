@@ -42,6 +42,8 @@ namespace GameData
     const std::vector<EntityData>& entities() noexcept;
     const std::vector<LootCrateData>& lootCrates() noexcept;
     const std::list<ProjectileData>& projectiles() noexcept;
+
+    extern int frameney = 0;
 }
 
 struct LocalPlayerData {
@@ -101,6 +103,7 @@ struct ProjectileData : BaseData {
 struct PlayerData : BaseData {
     PlayerData(Entity* entity) noexcept;
 
+    //IGOR::REMEMBER VISIBILITY CHECK
     bool enemy = false;
     bool visible = false;
     bool audible;

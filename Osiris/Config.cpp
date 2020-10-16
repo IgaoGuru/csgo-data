@@ -202,8 +202,8 @@ static void from_json(const json& j, Font& f)
     if (!f.name.empty())
         config->scheduleFontLoad(f.name);
 
-    if (const auto it = std::find_if(config->getSystemFonts().begin(), config->getSystemFonts().end(), [&f](const auto& e) { return e == f.name; }); it != config->getSystemFonts().end())
-        f.index = std::distance(config->getSystemFonts().begin(), it);
+    if (const auto it = std::find_if(std::cbegin(config->systemFonts), std::cend(config->systemFonts), [&f](const auto& e) { return e == f.name; }); it != std::cend(config->systemFonts))
+        f.index = std::distance(std::cbegin(config->systemFonts), it);
     else
         f.index = 0;
 }
@@ -406,7 +406,7 @@ static void from_json(const json& j, Config::Visuals& v)
     read(j, "No grass", v.noGrass);
     read(j, "No shadows", v.noShadows);
     read(j, "Wireframe smoke", v.wireframeSmoke);
-    read(j, "Zoom", v.zoom);
+    read(j, "Zoom", v.noScopeOverlay);
     read(j, "Zoom key", v.zoomKey);
     read(j, "Thirdperson", v.thirdperson);
     read(j, "Thirdperson key", v.thirdpersonKey);
@@ -987,7 +987,7 @@ static void to_json(json& j, const Config::Visuals& o)
     WRITE("No grass", noGrass);
     WRITE("No shadows", noShadows);
     WRITE("Wireframe smoke", wireframeSmoke);
-    WRITE("Zoom", zoom);
+    WRITE("Zoom", noScopeOverlay);
     WRITE("Zoom key", zoomKey);
     WRITE("Thirdperson", thirdperson);
     WRITE("Thirdperson key", thirdpersonKey);
