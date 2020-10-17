@@ -30,20 +30,13 @@ After installing python, you can install all the necessary libraries with the fo
 
 ### Downloading
 
-There are two options of downloading the source code:
-
-#### Without [git](https://git-scm.com) Choose this option if you want pure source and you're not going to contribute to the repo. Download size ~600 kB.
-To download source code this way [click here](https://github.com/danielkrupinski/Osiris/archive/master.zip).
-
 #### With [git](https://git-scm.com)
-
-Choose this option if you're going to contribute to the repo or you want to use version control system. Download size ~4 MB. Git is required to step further, if not installed download it [here](https://git-scm.com).
 
 Open git command prompt and enter following command:
 ```
-git clone --depth=1 https://github.com/danielkrupinski/Osiris.git
+git clone https://github.com/IgaoGuru/csgo-data.git
 ```
-`Osiris` folder should have been succesfully created, containing all the source files.
+`csgo-data` folder should have been succesfully created, containing all the source files.
 
 ### Compiling from source
 
@@ -53,30 +46,7 @@ Then change build configuration to `Release | x86` and simply press **Build solu
 
 If everything went right you should receive `Osiris.dll`  binary file.
 
-### Loading / Injecting into game process
-
-Open your favorite [DLL injector](https://en.wikipedia.org/wiki/DLL_injection) and just inject `Osiris.dll` into `csgo.exe` process.
-
 When injected, menu is openable under `INSERT` key.
-
-### Further optimizations
-If your CPU supports AVX / AVX2 / AVX-512 instruction set, you can enable it in project settings. This should result in more performant code, optimized for your CPU. Currently SSE2 instructions are selected in project settings.
-
-## FAQ
-
-### How do I open menu?
-Press <kbd>INSERT</kbd> while focused on CS:GO window.
-
-### Where is my config file saved?
-Configuration files are saved inside `Osiris` folder in your `Documents` folder (`%USERPROFILE%\Documents\Osiris`). The config is in human readable format and can be edited (e.g, using notepad). Sometimes after updates configuration file needs to be deleted and recreated.
-
-### What hooking methods Osiris uses?
-Currently implemented hooking methods are:
-- MinHook - trampoline hook
-- VmtHook - hook a function directly in a vtable
-- VmtSwap - create a copy of a vtable and swap the pointer on the class instance
-
-Hooking implementation files are located in [Hooks](https://github.com/danielkrupinski/Osiris/tree/master/Osiris/Hooks) directory.
 </details>
 
 ## Collecting data
@@ -92,7 +62,18 @@ Select the game's instance in the injector, and inject the dll.
 After starting a private match with bots, open the menu with <kbd>INSERT</kbd>, and click on the `ESP` option.
 
 In the ESP menu, you can enable either enemy and ally bounding boxes (or both at the same time).
+By default, the bounding boxes are not rendered into the game (so you won't be able to see them while playing). Later on, an option for toggling bbox rendering will be added.
 
+After enabling the preffered bounding boxes, a text file will be created in the **stardard path** ` (C:/csgo_log.txt)`. This text file will be read and processed by the `main_cycle.py` script. (You don't need to edit or open the file)
+
+> note: in order to modify the standard csv path, you will need to edit/compile the dll's code from source
+<details>
+<summary> If you want to modify the standard csv path:</summary>
+<br>
+
+After opening the dll's code in VisualStudio, head over to the `StreamProofEsp.cpp` file under the `Hacks` folder. In there, you should find a `PlayerAnnotate` function, and there you can modify the "myfile.open('x')" path.
+
+</details>
 ## Acknowledgments
 
 * [Daniel Krupiński](https://github.com/danielkrupinski) for developing and maintaining the open-source original software.
