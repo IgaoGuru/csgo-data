@@ -242,13 +242,12 @@ static void playerAnnotate(const PlayerData& playerData, const Player& config) n
         && (bbox.min.y >= 0) && (bbox.min.y <= 2560)
         && (bbox.max.y >= 0) && (bbox.max.y <= 2560)
         ) {
-		//<< "," << ImGui::GetIO().DisplaySize.x << "," << ImGui::GetIO().DisplaySize.y
 
-        myfile << milliney << "," << GameData::frameney << "," << playerData.enemy 
+		//<< "," << ImGui::GetIO().DisplaySize.x << "," << ImGui::GetIO().DisplaySize.y
+        myfile << milliney << "," << GameData::frameney << "," << *GameData::local().team << "," << playerData.enemy 
 			     		   << "," << bbox.min.x << "," << bbox.min.y
 						   << "," << bbox.max.x << "," << bbox.max.y
 		        		   << "\n";
-		
 
     } 
     myfile.close();

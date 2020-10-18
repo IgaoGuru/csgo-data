@@ -181,6 +181,7 @@ void LocalPlayerData::update() noexcept
         return;
     }
 
+    team = localPlayer->getLocalPlayerTeam();
     exists = true;
     alive = localPlayer->isAlive();
 
@@ -276,6 +277,7 @@ void ProjectileData::update(Entity* projectile) noexcept
 
 PlayerData::PlayerData(Entity* entity) noexcept : BaseData{ entity }
 {
+    //IGOR PLAYERDATAENEMY
     if (localPlayer) {
         enemy = memory->isOtherEnemy(entity, localPlayer.get());
         visible = entity->visibleTo(localPlayer.get());

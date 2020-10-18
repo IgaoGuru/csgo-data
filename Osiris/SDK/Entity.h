@@ -169,6 +169,12 @@ public:
         return *reinterpret_cast<bool*>(uintptr_t(&clip()) + 0x41);
     }
 
+    //IGOR tr = 2, ct = 3
+    int* getLocalPlayerTeam() noexcept
+    {
+        return &team();
+    }
+
     auto getUserId() noexcept
     {
         if (PlayerInfo playerInfo; interfaces->engine->getPlayerInfo(index(), playerInfo))
@@ -196,6 +202,7 @@ public:
     NETVAR_OFFSET(moveType, "CBaseEntity", "m_nRenderMode", 1, MoveType)
     NETVAR(simulationTime, "CBaseEntity", "m_flSimulationTime", float)
     NETVAR(ownerEntity, "CBaseEntity", "m_hOwnerEntity", int)
+    //IGOR
     NETVAR(team, "CBaseEntity", "m_iTeamNum", int)
     NETVAR(spotted, "CBaseEntity", "m_bSpotted", bool)
 

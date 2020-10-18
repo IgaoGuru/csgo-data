@@ -40,7 +40,7 @@ def match(csv_path, img_dir_path, output_path):
     output_path = path to ANNOTATION CSV, where the function will append all of its results 
     '''
     
-    names = ['time','frame','enemy','x0','y0','x1','y1']
+    names = ['time','frame','team','enemy','x0','y0','x1','y1']
     csv = pd.read_csv(str(csv_path), names=names)
     current_time = time.time()
     current_time=str(int(current_time)*1000)
@@ -98,7 +98,7 @@ def launch_plot_bboxes(img_dir_path, annotation_path, sleeptime=False):
     '''
     this function applies the plot_bbox function for all images in a directory, using for reference the ANNOTATION CSV (general docs)
     '''
-    names = ['img','enemy','csgologrow','x0','y0','x1','y1']
+    names = ['img','frame','team','enemy','x0','y0','x1','y1']
     df_annotation = pd.read_csv(str(annotation_path), names=names, skiprows=2)
     bboxes = []
 
@@ -168,7 +168,7 @@ def cleaner(img_dir_path, annotation_path):
     deletes unused images in img_dir_path to reduce wasted space
     '''
 
-    names = ['img','enemy','csgologrow','x0','y0','x1','y1']
+    names = ['img','frame','team','enemy','x0','y0','x1','y1']
     df_annotation = pd.read_csv(str(annotation_path), names=names, skiprows=2)
     imgs = list(df_annotation['img'])
     print(imgs)

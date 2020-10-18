@@ -49,6 +49,7 @@ namespace GameData
 struct LocalPlayerData {
     void update() noexcept;
 
+    int* team;
     bool exists = false;
     bool alive = false;
     bool inReload = false;

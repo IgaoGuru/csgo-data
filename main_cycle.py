@@ -13,14 +13,12 @@ from time import time
 │   │   │   ├── 293849239.png
 │   │   │   ├── ...
 │   │   ├── annotation_293849238.csv
-│   │   ├── csgolog.csv
 │   ├── 38029831
 │   │   ├── imgs
 │   │   │   ├── 38029835.png
 │   │   │   ├── 38029904.png
 │   │   │   ├── ...
 │   │   ├── annotation_38029831.csv
-│   │   ├── csgolog.csv
 
 this file executes the entire data collection cycle, in the following steps:
 
