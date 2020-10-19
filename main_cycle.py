@@ -1,4 +1,6 @@
 import pandas as pd
+from os import remove
+from os import mkdir
 import numpy as np
 from utils import csgodata
 from time import time
@@ -35,16 +37,19 @@ current_time = str(int(time()))
 output_path = output_path+current_time+'\\'
 img_dir_path = output_path+'imgs\\'
 annotation_path = output_path+'annotation_'+current_time+'.txt'
+STANDARD_CSV_PATH = 'C:\\csgolog\\csgolog.txt' 
 
+mkdir(output_path)
+mkdir(img_dir_path)
 with open(annotation_path, 'w') as myfile:
     pass
 
 while True:
-    csgodata.screen_record(img_dir_path, 50)
+    csgodata.screen_record(img_dir_path, 20)
 
-    csv_idx = csgodata.match(csv_path='E:\\ProgramFiles(Terav1)\\csgolog.txt',\
+    csv_idx = csgodata.match(csv_path=STANDARD_CSV_PATH,\
                             img_dir_path=img_dir_path, output_path=annotation_path)
 
-    csgodata.launch_plot_bboxes(img_dir_path, annotation_path)
-
     csgodata.cleaner(img_dir_path, annotation_path)
+
+    remove(STANDARD_CSV_PATH)

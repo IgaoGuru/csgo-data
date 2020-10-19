@@ -71,7 +71,7 @@ def match(csv_path, img_dir_path, output_path):
                     idx = match_idx-7+i
                     output.write(f'{img_name}')
                     out_line = f"{csv.iloc[idx]['x0']},{csv.iloc[idx]['y0']},{csv.iloc[idx]['x1']},{csv.iloc[idx]['y1']}"
-                    out_line = str(csv.iloc[idx]['enemy']) + ',' + str(idx) + ',' + out_line 
+                    out_line = str(csv.iloc[idx]['team']) + ',' + str(csv.iloc[idx]['enemy']) + ',' + str(idx) + ',' + out_line 
 
                     output.write(f',{out_line}\n')
             print(f'all the matches were: {matches_idxs}')

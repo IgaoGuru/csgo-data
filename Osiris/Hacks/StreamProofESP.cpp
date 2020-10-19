@@ -230,7 +230,7 @@ static void playerAnnotate(const PlayerData& playerData, const Player& config) n
 
     using namespace std::chrono;
     std::fstream myfile;
-    myfile.open("E:/ProgramFiles(Terav1)/csgolog.txt", std::fstream::app);
+    myfile.open("C:/csgolog/csgolog.txt", std::fstream::app);
 
 	auto now = std::chrono::system_clock::now();
 	auto duration = now.time_since_epoch();
