@@ -44,6 +44,8 @@ mkdir(img_dir_path)
 with open(annotation_path, 'w') as myfile:
     pass
 
+remove(STANDARD_CSV_PATH)
+
 while True:
     csgodata.screen_record(img_dir_path, 20)
 
@@ -52,4 +54,3 @@ while True:
 
     csgodata.cleaner(img_dir_path, annotation_path)
 
-    remove(STANDARD_CSV_PATH)

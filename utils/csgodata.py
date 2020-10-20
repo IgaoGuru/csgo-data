@@ -65,15 +65,17 @@ def match(csv_path, img_dir_path, output_path):
             #check for any bboxes of the same frame, 7 below and 7 above the match found (makes sure no bbox goes undetected)
             #while checking, makes list of all bboxes of same frame (matches_idxs), and outputs them (one bbox per line) in the output file
             for i in range(14):
+                idx = match_idx-7+i
                 if csv.iloc[(match_idx-7+i)]['frame'] == match_frame:
                     matches_idxs.append(match_idx-7+i)
 
-                    idx = match_idx-7+i
                     output.write(f'{img_name}')
                     out_line = f"{csv.iloc[idx]['x0']},{csv.iloc[idx]['y0']},{csv.iloc[idx]['x1']},{csv.iloc[idx]['y1']}"
-                    out_line = str(csv.iloc[idx]['team']) + ',' + str(csv.iloc[idx]['enemy']) + ',' + str(idx) + ',' + out_line 
+                    out_line = str(csv.iloc[idx]['team']) + ',' + str(csv.iloc[idx]['enemy']) + ',' + out_line 
 
                     output.write(f',{out_line}\n')
+                if idx + 1 == len(csv['frame']) - 1:
+                    break
             print(f'all the matches were: {matches_idxs}')
     return current_time
 
