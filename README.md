@@ -61,10 +61,36 @@ Select the game's instance in the injector, and inject the dll.
 
 After starting a private match with bots, open the menu with <kbd>INSERT</kbd>, and click on the `ESP` option.
 
+<details>
+<summary> Recommended CS:GO match settings:</summary>
+<br>
+
+For data-collection results, it's best to run **deathmatch** private matches, that is because there are no interruptions during the game, and you can switch freely between teams.
+
+After starting the private match, make sure your [Developer Console](https://gamepros.gg/csgo/articles/how-to-open-the-console-csgo-enable-and-use-developer-console) is activated in CS:GO's settings. After that, I recommend setting the following commands:
+```
+sv_cheats 1
+bind t noclip
+bind y god
+mp_dm_bonus_length_max 0
+mp_dm_time_between_bonus_max 9999
+cl_teamid_overhead_mode 0
+mp_roundtime 60
+mp_restartgame 1 60
+god
+```
+with these commands, you can use <kbd>t</kbd> to fly through te map, making it easier to spot other players, and use <kbd>y</kbd> to make yourself invincible. 
+</details>
+.
+
+> note: because of a minor difference between the capturing of the screen and the bounding box output, moving the mouse too fast may cause inaccuracies in the data collection. Try to move the mouse at a steady rate, with no fast or abrupt movements.
+
 In the ESP menu, you can enable either enemy and ally bounding boxes (or both at the same time).
 By default, the bounding boxes are not rendered into the game (so you won't be able to see them while playing). Later on, an option for toggling bbox rendering will be added.
 
-After enabling the preffered bounding boxes, a text file will be created in the **stardard path** ` (C:/csgo_log.txt)`. This text file will be read and processed by the `main_cycle.py` script. (You don't need to edit or open the file)
+[!alt text](readmeimages/csgodatareadme2.png?raw=true "enabling visible enemy bounding box output")
+
+After enabling the preffered bounding boxes, a text file will be created in the **stardard path** `(C:/csgo_log.txt)`. This text file will be read and processed by the `main_cycle.py` script. (You don't need to edit or open the file)
 
 > note: in order to modify the standard csv path, you will need to edit/compile the dll's code from source
 <details>
