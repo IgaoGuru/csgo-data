@@ -53,19 +53,18 @@ When injected, menu is openable under `INSERT` key.
 
 You can download the already compiled dll, and inject it into the game either with [Extreme injector](https://github.com/master131/ExtremeInjector/releases/tag/v3.7.3) (recommended), or [Xenos Injector](https://github.com/DarthTon/Xenos/releases/tag/2.3.2).
 
-Inside Extreme Injector's configuration menu, change the Injection Method from "Standard Injection" to "Manual Map".
+### Setting up the game
 
-Remember to configurate steam to start CS:GO in [insecure mode](https://csgg.in/csgo-guide-to-launch-options/) (with the "-untrusted") flag), and run the game;
+Remember to configurate steam to start CS:GO in [insecure mode](https://csgg.in/csgo-guide-to-launch-options/) (with the "-untrusted") flag), and run the game. This flag will ensure that Valve's anticheat isn't activated when you inject the dll (eliminating the risk of banning you steam account from cs:go's servers).
 
-Select the game's instance in the injector, and inject the dll. 
+In csgo's video setting, remember to change the in-game resolution to your current [img_rez]() (default=`[1280x720]`).
+**place the csgo window on the top-left corner of you primary monitor**
 
-After starting a private match with bots, open the menu with <kbd>INSERT</kbd>, and click on the `ESP` option.
+For data-collection results, it's best to run "deathmatch" private matches, that is because there are no interruptions (like round intervals or timeouts) during the game, and you can switch freely between teams.
 
 <details>
-<summary> Recommended CS:GO match settings:</summary>
+<summary> Recommended CS:GO deathmatch settings:</summary>
 <br>
-
-For data-collection results, it's best to run **deathmatch** private matches, that is because there are no interruptions during the game, and you can switch freely between teams.
 
 After starting the private match, make sure your [Developer Console](https://gamepros.gg/csgo/articles/how-to-open-the-console-csgo-enable-and-use-developer-console) is activated in CS:GO's settings. After that, I recommend setting the following commands:
 ```
@@ -79,27 +78,70 @@ mp_roundtime 60
 mp_restartgame 1 60
 god
 ```
-with these commands, you can use <kbd>t</kbd> to fly through te map, making it easier to spot other players, and use <kbd>y</kbd> to make yourself invincible. 
+with these commands, you can use <kbd>t</kbd> to fly through te map, making it easier to spot other players, and use <kbd>y</kbd> to make the LocalPlayer(you) immortal. 
 </details>
 .
 
 > note: because of a minor difference between the capturing of the screen and the bounding box output, moving the mouse too fast may cause inaccuracies in the data collection. Try to move the mouse at a steady rate, with no fast or abrupt movements.
 
-In the ESP menu, you can enable either enemy and ally bounding boxes (or both at the same time).
-By default, the bounding boxes are not rendered into the game (so you won't be able to see them while playing). Later on, an option for toggling bbox rendering will be added.
+###Running the Dll
 
-[!alt text](readmeimages/csgodatareadme2.png?raw=true "enabling visible enemy bounding box output")
+Inside Extreme Injector's configuration menu, change the Injection Method from "Standard Injection" to "Manual Map".
 
-After enabling the preffered bounding boxes, a text file will be created in the **stardard path** `(C:/csgo_log.txt)`. This text file will be read and processed by the `main_cycle.py` script. (You don't need to edit or open the file)
+Before injecting, create a folder named named `"csgolog"` inside `"C:\"`, so that it's path is `C:\csgolog\`.
 
-> note: in order to modify the standard csv path, you will need to edit/compile the dll's code from source
+Select the game's process in the injector, and select the dll in `"ADD DLL"` option. You can now inject the dll by clicking `Inject`. 
+
+After starting a private match with bots, open the menu with <kbd>INSERT</kbd>, and click on the `ESP` option.
+
+In the ESP menu, you can enable either enemy and ally bounding boxes (or both at the same time) with the "Box" checkbox.
+> By default, the bounding boxes are not rendered into the game (so you won't be able to see them while playing). Later on, an option for toggling bbox rendering will be added.
+
+<img src="readmeimages/csgodatareadme2.png" alt="drawing" width="800"/>
+
+Enabling the "Box" option will automatically start outputing bboxes for the specific target. (in this case "Visible Enemies");
+
+After enabling the preffered bounding boxes, a text file will be created in the **stardard path** `(C:/csgolog/csgo_log.txt)`. You don't need to edit or open the file. This file will be read and processed by the `main_cycle.py` script.
+
+> note: in order to modify the standard csv path (not recommended), you will need to edit/compile the dll's code from source
 <details>
 <summary> If you want to modify the standard csv path:</summary>
 <br>
 
-After opening the dll's code in VisualStudio, head over to the `StreamProofEsp.cpp` file under the `Hacks` folder. In there, you should find a `PlayerAnnotate` function, and there you can modify the "myfile.open('x')" path.
-
+After opening the dll's code in VisualStudio, head over to the `StreamProofEsp.cpp` file under the `Hacks` folder. In there, you should find a `PlayerAnnotate` function, and there you can modify the "myfile.open('your_path_here')" path.
+<img src="readmeimages/csgodatareadme3.png" alt="drawing" width="800"/>
 </details>
+
+
+###Collecting images and outputs
+
+Now that the preferred bboxes are being outputed, its time to collect the actual images that correspond to the outputed bboxes. For collecting the images and pairing them with the dll's output, we will use the **main_cycle.py** script.
+
+Open the **main_cycle.py** script with you editor of choice, and change the "output_path" variable to your directory of choice. This path will contain the outputs from the data-collector.
+
+With the dll running, run the **main_cycle.py** script. A folder will be created every time the script is ran. Inside, there will be the annotation from the screencaptures inside the "imgs" folder. This annotation file is the final output of the data-collector. 
+
+## Important variables and files
+
+#### main_cycle.py 
+This file manages the screencapturing, saving, merging and outputing of the data-collector. 
+All functions used by this file come from the **csgodata** module (inside the **utils** folder).
+
+Every run of this file generates a new [session folder](####sessionfolder)
+
+#### Session folder
+A session is a complete run of the main_cycle.py script. This folder contains the outputs from main_cycle.py.
+The folder contains:
+* imgs folder (contains the screenshots)
+* [annotation file](#annotationfile) (contains the formatted bbox annotations)
+
+#### Annotation file
+The annotation file contains the following format:
+* corresponding image's name
+* LocalPlayer's team (2 = Terrorist, 3 = CounterTerrorist)
+* bboxes's enemy state (if bbox is from the opposite team from LocalPlayer = 1; else = 0)
+* x0, y0, x1, y1
+
 ## Acknowledgments
 
 * [Daniel Krupiński](https://github.com/danielkrupinski) for developing and maintaining the open-source original software.

@@ -1,5 +1,6 @@
 import pandas as pd
 from os import remove
+from os.path import isdir
 from os import mkdir
 import numpy as np
 from utils import csgodata
@@ -30,14 +31,13 @@ this file executes the entire data collection cycle, in the following steps:
 4: rinse n' repeat 
 
 '''
-
 output_path = 'E:\\Documento\\outputs\\'
+STANDARD_CSV_PATH = 'C:\\csgolog\\csgolog.txt' 
 
 current_time = str(int(time()))
 output_path = output_path+current_time+'\\'
 img_dir_path = output_path+'imgs\\'
 annotation_path = output_path+'annotation_'+current_time+'.txt'
-STANDARD_CSV_PATH = 'C:\\csgolog\\csgolog.txt' 
 
 mkdir(output_path)
 mkdir(img_dir_path)
