@@ -84,7 +84,7 @@ with these commands, you can use <kbd>t</kbd> to fly through te map, making it e
 
 > note: because of a minor difference between the capturing of the screen and the bounding box output, moving the mouse too fast may cause inaccuracies in the data collection. Try to move the mouse at a steady rate, with no fast or abrupt movements.
 
-###Running the Dll
+### Running the Dll
 
 Inside Extreme Injector's configuration menu, change the Injection Method from "Standard Injection" to "Manual Map".
 
@@ -113,7 +113,7 @@ After opening the dll's code in VisualStudio, head over to the `StreamProofEsp.c
 </details>
 
 
-###Collecting images and outputs
+### Collecting images and outputs
 
 Now that the preferred bboxes are being outputed, its time to collect the actual images that correspond to the outputed bboxes. For collecting the images and pairing them with the dll's output, we will use the **main_cycle.py** script.
 
