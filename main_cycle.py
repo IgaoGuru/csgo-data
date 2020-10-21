@@ -7,8 +7,6 @@ from utils import csgodata
 from time import time
 
 '''
--- [INPUTS] --
-
 ├── outputs
 │   ├── 293849238
 │   │   ├── imgs
