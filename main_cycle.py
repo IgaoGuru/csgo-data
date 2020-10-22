@@ -66,5 +66,3 @@ while True:
     remove(STANDARD_CSV_PATH)
 
     time.sleep(10)
-
-
