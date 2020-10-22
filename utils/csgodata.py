@@ -4,6 +4,7 @@ import os
 import time
 import cv2
 from mss import mss
+from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import pyautogui
@@ -12,15 +13,18 @@ def screen_record(output_dir_path, timer, view_img=False, save_img=True):
     #timer represents number of seconds for which the function is running
     last_time = time.time()
     initial_time = last_time
+    saved_imgs = 0
+    pbar = tqdm(total=timer)
     with mss() as sct:
-        while (time.time()-initial_time) < timer:
+        while time.time() - initial_time < timer:
+
+            pbar.update(time.time()-last_time)
+            last_time = time.time()
+
             # 1280 windowed mode for CS:GO, at the top left position of your main screen.
             # 26 px accounts for title bar. 
             monitor = {"top": 26, "left": 0, "width": 1280, "height": 720}
             printscreen = np.asarray(sct.grab(monitor))
-
-            print('loop took {} seconds'.format(time.time()-last_time))
-            last_time = time.time()
 
             if view_img:
                 cv2.imshow('window', printscreen)
@@ -28,7 +32,10 @@ def screen_record(output_dir_path, timer, view_img=False, save_img=True):
                     cv2.destroyAllWindows()
                     break
             if save_img:
+                saved_imgs += 1
                 cv2.imwrite(f'{output_dir_path}{int(last_time*1000)}.png', printscreen)
+
+    return saved_imgs
 
 def match(csv_path, img_dir_path, output_path):
     '''
@@ -45,11 +52,10 @@ def match(csv_path, img_dir_path, output_path):
     current_time = time.time()
     current_time=str(int(current_time)*1000)
 
-    with open(output_path, 'w+') as output:
+    with open(output_path, 'a') as output:
         timetable = np.asarray(csv['time'])
-        output.write(f'{csv_path}\n')
-        output.write(f'{img_dir_path}\n')
 
+        matched_frames = 0
         #loop through every image and find the best matching bbox's indexes in csv
         for img in os.listdir(img_dir_path):
             img_name = img[:-4]
@@ -60,14 +66,13 @@ def match(csv_path, img_dir_path, output_path):
                 continue
 
             match_frame = csv.iloc[match_idx]['frame']
-            matches_idxs = []
+            matched_frames += 1;
 
             #check for any bboxes of the same frame, 7 below and 7 above the match found (makes sure no bbox goes undetected)
-            #while checking, makes list of all bboxes of same frame (matches_idxs), and outputs them (one bbox per line) in the output file
+            #while checking, output them (one bbox per line) in the annotation file
             for i in range(14):
                 idx = match_idx-7+i
                 if csv.iloc[(match_idx-7+i)]['frame'] == match_frame:
-                    matches_idxs.append(match_idx-7+i)
 
                     output.write(f'{img_name}')
                     out_line = f"{csv.iloc[idx]['x0']},{csv.iloc[idx]['y0']},{csv.iloc[idx]['x1']},{csv.iloc[idx]['y1']}"
@@ -76,8 +81,7 @@ def match(csv_path, img_dir_path, output_path):
                     output.write(f',{out_line}\n')
                 if idx + 1 == len(csv['frame']) - 1:
                     break
-            print(f'all the matches were: {matches_idxs}')
-    return current_time
+    return matched_frames 
 
 def plot_bbox(img_path, bboxes, sleeptime=False):
     '''
@@ -101,7 +105,7 @@ def launch_plot_bboxes(img_dir_path, annotation_path, sleeptime=False):
     this function applies the plot_bbox function for all images in a directory, using for reference the ANNOTATION CSV (general docs)
     '''
     names = ['img','frame','team','enemy','x0','y0','x1','y1']
-    df_annotation = pd.read_csv(str(annotation_path), names=names, skiprows=2)
+    df_annotation = pd.read_csv(str(annotation_path), names=names)
     bboxes = []
 
     #combine all bboxes from same frame into one list (bboxes)
@@ -170,13 +174,19 @@ def cleaner(img_dir_path, annotation_path):
     deletes unused images in img_dir_path to reduce wasted space
     '''
 
-    names = ['img','frame','team','enemy','x0','y0','x1','y1']
-    df_annotation = pd.read_csv(str(annotation_path), names=names, skiprows=2)
-    imgs = list(df_annotation['img'])
-    print(imgs)
+    num_kept_imgs, num_deleted_imgs = 0, 0
+    names = ['img','team','enemy','x0','y0','x1','y1']
+    df_annotation = pd.read_csv(str(annotation_path), names=names)
+    img_names = df_annotation['img'].values.astype(str)
+
+    print(img_names)
 
     for img in os.listdir(img_dir_path):
         img_name = img[:-4]
-        if int(img_name) not in imgs:
-            print(f'deleted file: {img_name}')
+
+        if img_name not in img_names:
             os.remove(img_dir_path + '\\' + img)
+            num_deleted_imgs += 1
+        else:
+            num_kept_imgs += 1
+    return num_kept_imgs, num_deleted_imgs
