@@ -2,6 +2,7 @@ import os
 import argparse
 from shutil import copyfile
 from datasetcsgo import CsgoDataset
+from tqdm import tqdm
 
 root_path = 'e:/documento/outputs'
 new_path = "e:/ai/coco-csgo2/"
@@ -38,9 +39,8 @@ def coco_converter(root_path, new_path, split, img_rez):
     dset = CsgoDataset(root_path)
     dset_dict = dset.dict_dataset
     train_len = int(dset.length * split)
-    val_len = dset.length - train_len
 
-    for idx, img in enumerate(dset_dict.keys()):
+    for idx, img in enumerate(tqdm(dset_dict.keys())):
         img_path = dset.get_image_path(idx)
         if idx <= train_len:
             img_final_path = os.path.join(img_train_path, img[1]) + ".png" 
