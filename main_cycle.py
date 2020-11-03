@@ -51,7 +51,7 @@ while True:
     while stat(STANDARD_CSV_PATH).st_size == 0:
         time.sleep(0.2)
 
-    saved_frames = csgodata.screen_record(img_dir_path, 15)
+    saved_frames = csgodata.screen_record(img_dir_path, 60)
 
     matched_frames = csgodata.match(csv_path=STANDARD_CSV_PATH,\
                             img_dir_path=img_dir_path, output_path=annotation_path)
