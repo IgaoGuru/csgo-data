@@ -39,6 +39,16 @@ os.mkdir(img_val_path)
 os.mkdir(lbl_train_path)
 os.mkdir(lbl_val_path)
 
+#---- create yaml file ----
+
+with open(os.path.join(new_path, "coco-csgo") + ".yml", "w+") as yml:
+    yml.write(f"train: your_path_here \n")
+    yml.write(f"val: your_path_here \n")
+    yml.write("\n")
+    yml.write(f"nc: 2 \n")
+    yml.write("\n")
+    yml.write(f"classes: [\'ct\', \'tr\']")
+
 #---- load dataset's dict ----
 dset = CsgoDataset(root_path)
 dset_dict = dset.dict_dataset
