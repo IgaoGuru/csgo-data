@@ -1,5 +1,6 @@
 import os
 import argparse
+from PIL import Image
 from shutil import copyfile
 from datasetcsgo import CsgoDataset
 from tqdm import tqdm
@@ -14,15 +15,17 @@ parser.add_argument('-split', help='''the percentage (value between 0 and 1) of 
                                       The remaining images will be destinated to validation.''', type=float)
 parser.add_argument('-width', help='the dataset\'s images width', type=int)
 parser.add_argument('-height', help='the dataset\'s images height', type=int)
+parser.add_argument('-img', help='the image\'s new size (square) in pixels', type=int)
 args = parser.parse_args()
 
 root_path = args.rp
 new_path = args.np
 split = args.split
 img_rez = (args.width, args.height)
+img_size = args.img
 
 #---- create directories and paths ----
-if not(os._exists(new_path)):
+if not(os.path.exists(new_path)):
     os.mkdir(new_path)
 os.mkdir(os.path.join(new_path,"images"))
 os.mkdir(os.path.join(new_path,"labels"))
@@ -54,7 +57,11 @@ for idx, img in enumerate(tqdm(dset_dict.keys())):
         img_final_path = os.path.join(img_val_path, img[1]) + ".png" 
         lbl_final_path = os.path.join(lbl_val_path, img[1]) + ".txt"
 
-    copyfile(img_path, img_final_path) 
+    #resize img and save
+    img_t = Image.open(img_path)
+    img_t = img_t.resize((img_size, img_size))
+    img_t = img_t.save(img_final_path)
+    # copyfile(img_path, img_final_path) 
 
     #---- creating label for the image ----
     with open(lbl_final_path, "w+") as lbl_file:
