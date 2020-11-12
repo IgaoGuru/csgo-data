@@ -27,7 +27,7 @@ split = args.split
 img_rez = (args.width, args.height)
 img_size = args.img
 
-print(f'using seed: {SEED}')
+print(f'using seed: {args.seed}')
 seed(args.seed)  
 
 #---- create directories and paths ----
@@ -72,7 +72,8 @@ dset_dict = dset.dict_dataset
 train_len = int(dset.length * split)
 
 #---- shuffle dataset's dict ----
-shuf_keys = shuffle(dset_dict.keys())
+shuf_keys = list(dset_dict.keys())
+shuffle(shuf_keys)
 
 # for every image in dataset 
 for idx, img in enumerate(tqdm(shuf_keys)):
