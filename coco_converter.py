@@ -1,12 +1,14 @@
-import os
 import argparse
 from PIL import Image
 from shutil import copyfile
 from datasetcsgo import CsgoDataset
 from tqdm import tqdm
 
-root_path = 'e:/documento/outputs'
-new_path = "e:/ai/coco-csgo2/"
+from random import shuffle
+from random import seed
+from os.path import exists
+from os.path import join
+from os import mkdir
 
 parser = argparse.ArgumentParser(description='convert csgo-data style dataset into coco-style dataset')
 parser.add_argument('-rp', help='the absolute path to the root directory of the csgo-data dataset', type=str)
@@ -16,6 +18,7 @@ parser.add_argument('-split', help='''the percentage (value between 0 and 1) of 
 parser.add_argument('-width', help='the dataset\'s images width', type=int)
 parser.add_argument('-height', help='the dataset\'s images height', type=int)
 parser.add_argument('-img', help='the image\'s new size (square) in pixels', type=int)
+parser.add_argument('-seed', help='seed for dataset\'s random order', type=int, nargs='?', default=42)
 args = parser.parse_args()
 
 root_path = args.rp
@@ -24,48 +27,65 @@ split = args.split
 img_rez = (args.width, args.height)
 img_size = args.img
 
-#---- create directories and paths ----
-if not(os.path.exists(new_path)):
-    os.mkdir(new_path)
-os.mkdir(os.path.join(new_path,"images"))
-os.mkdir(os.path.join(new_path,"labels"))
+print(f'using seed: {SEED}')
+seed(args.seed)  
 
-img_train_path = os.path.join(new_path,"images", "train")
-img_val_path = os.path.join(new_path,"images", "val")
-lbl_train_path = os.path.join(new_path,"labels", "train")
-lbl_val_path = os.path.join(new_path,"labels", "val") 
-os.mkdir(img_train_path)
-os.mkdir(img_val_path)
-os.mkdir(lbl_train_path)
-os.mkdir(lbl_val_path)
+#---- create directories and paths ----
+
+img_train_path = join(new_path,"images", "train")
+img_val_path = join(new_path,"images", "val")
+lbl_train_path = join(new_path,"labels", "train")
+lbl_val_path = join(new_path,"labels", "val") 
+
+if not(exists(new_path)):
+    mkdir(new_path)
+    mkdir(join(new_path,"images"))
+    mkdir(join(new_path,"labels"))
+    mkdir(img_train_path)
+    mkdir(img_val_path)
+    mkdir(lbl_train_path)
+    mkdir(lbl_val_path)
+    complete_np = False
+else:
+    if exists(join(new_path, "images")) and exists(join(new_path, "labels")):
+        if exists(join(new_path, "images", "train")) and exists(join(new_path, "images", "val")) \
+            and exists(join(new_path, "labels", "train")) and exists(join(new_path, "labels", "val")):
+            complete_np = True
+        else:
+            raise Exception("the new path (-np) already contains a incomplete dataset!")
+    else:
+        raise Exception("the new path (-np) already contains a incomplete dataset!")
 
 #---- create yaml file ----
 
-with open(os.path.join(new_path, "coco-csgo") + ".yml", "w+") as yml:
+with open(join(new_path, "coco-csgo") + ".yml", "w+") as yml:
     yml.write(f"train: your_path_here \n")
     yml.write(f"val: your_path_here \n")
     yml.write("\n")
     yml.write(f"nc: 2 \n")
     yml.write("\n")
-    yml.write(f"classes: [\'ct\', \'tr\']")
+    yml.write(f"names: [\'ct\', \'tr\']")
 
 #---- load dataset's dict ----
 dset = CsgoDataset(root_path)
 dset_dict = dset.dict_dataset
 train_len = int(dset.length * split)
 
+#---- shuffle dataset's dict ----
+shuf_keys = shuffle(dset_dict.keys())
+
 # for every image in dataset 
-for idx, img in enumerate(tqdm(dset_dict.keys())):
+for idx, img in enumerate(tqdm(shuf_keys)):
     img_path = dset.get_image_path(idx)
 
     #if the image should be destinated to training directory
     if idx <= train_len:
-        img_final_path = os.path.join(img_train_path, img[1]) + ".png" 
-        lbl_final_path = os.path.join(lbl_train_path, img[1]) + ".txt"
+        img_final_path = join(img_train_path, img[1]) + ".png" 
+        lbl_final_path = join(lbl_train_path, img[1]) + ".txt"
     #else, go to validation
     else:
-        img_final_path = os.path.join(img_val_path, img[1]) + ".png" 
-        lbl_final_path = os.path.join(lbl_val_path, img[1]) + ".txt"
+        img_final_path = join(img_val_path, img[1]) + ".png" 
+        lbl_final_path = join(lbl_val_path, img[1]) + ".txt"
 
     #resize img and save
     img_t = Image.open(img_path)
@@ -89,10 +109,19 @@ for idx, img in enumerate(tqdm(dset_dict.keys())):
             #normalize all according to img size
             bbox_width = bbox[2] - bbox[0]
             bbox_height = bbox[3] - bbox[1]
-            bbox_center = (((bbox_width/2)+bbox[0])/img_rez[0], \
-                        ((bbox_height/2)+bbox[1])/img_rez[1])
-            bbox_width = (bbox_width)/img_rez[0]
-            bbox_height = (bbox_height)/img_rez[1]
+            bbox_center = [((bbox_width/2)+bbox[0])/img_rez[0], \
+                        ((bbox_height/2)+bbox[1])/img_rez[1]]
+            bbox_width = bbox_width/img_rez[0]
+            bbox_height = bbox_height/img_rez[1]
+            if bbox_width > 1:
+                bbox_width = 0.99999
+            if bbox_height > 1:
+                bbox_height = 0.99999
+            if bbox_center[0] > 1:
+                bbox_center[0] = 0.99999
+            if bbox_center[1] > 1:
+                bbox_center[1] = 0.99999
+
             full_line = f"{w_lbl} {bbox_center[0]:.5f} {bbox_center[1]:.5f} {bbox_width:.5f} {bbox_height:.5f}"
             lbl_file.write(full_line + "\n")
 
