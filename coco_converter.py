@@ -72,12 +72,15 @@ dset_dict = dset.dict_dataset
 train_len = int(dset.length * split)
 
 #---- shuffle dataset's dict ----
+order_keys = list(dset_dict.keys())
 shuf_keys = list(dset_dict.keys())
 shuffle(shuf_keys)
 
 # for every image in dataset 
 for idx, img in enumerate(tqdm(shuf_keys)):
-    img_path = dset.get_image_path(idx)
+    # img_path = dset.get_image_path(idx)
+    img_idx = order_keys.index(img)
+    img_path = dset.get_image_path(img_idx)
 
     #if the image should be destinated to training directory
     if idx <= train_len:
@@ -95,9 +98,6 @@ for idx, img in enumerate(tqdm(shuf_keys)):
     # copyfile(img_path, img_final_path) 
 
     #---- creating label for the image ----
-    print('negoney')
-    print(img_final_path)
-    print(lbl_final_path)
     with open(lbl_final_path, "w+") as lbl_file:
         #for every bounding box's label 
         for d_idx, lbl in enumerate(dset_dict[img][0]):

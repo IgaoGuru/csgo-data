@@ -132,6 +132,8 @@ def coco_show_images():
             bboxes = []
 
             with open(join(lbl_train_path, lbl_path), "r") as filezin:
+                print(img_path)
+                print(join(lbl_train_path, lbl_path))
                 lines = filezin.readlines()
                 for line in lines:
                     coords = [float(x) for x in line.split(" ")]
