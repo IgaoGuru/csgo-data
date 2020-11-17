@@ -95,6 +95,9 @@ for idx, img in enumerate(tqdm(shuf_keys)):
     # copyfile(img_path, img_final_path) 
 
     #---- creating label for the image ----
+    print('negoney')
+    print(img_final_path)
+    print(lbl_final_path)
     with open(lbl_final_path, "w+") as lbl_file:
         #for every bounding box's label 
         for d_idx, lbl in enumerate(dset_dict[img][0]):
@@ -114,14 +117,14 @@ for idx, img in enumerate(tqdm(shuf_keys)):
                         ((bbox_height/2)+bbox[1])/img_rez[1]]
             bbox_width = bbox_width/img_rez[0]
             bbox_height = bbox_height/img_rez[1]
-            if bbox_width > 1:
-                bbox_width = 0.99999
-            if bbox_height > 1:
-                bbox_height = 0.99999
-            if bbox_center[0] > 1:
-                bbox_center[0] = 0.99999
-            if bbox_center[1] > 1:
-                bbox_center[1] = 0.99999
+            # if bbox_width > 1:
+            #     bbox_width = 0.99999
+            # if bbox_height > 1:
+            #     bbox_height = 0.99999
+            # if bbox_center[0] > 1:
+            #     bbox_center[0] = 0.99999
+            # if bbox_center[1] > 1:
+            #     bbox_center[1] = 0.99999
 
             full_line = f"{w_lbl} {bbox_center[0]:.5f} {bbox_center[1]:.5f} {bbox_width:.5f} {bbox_height:.5f}"
             lbl_file.write(full_line + "\n")
