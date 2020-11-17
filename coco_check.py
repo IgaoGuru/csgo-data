@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 from utils.csgodata import plot_bbox
 
-parser = argparse.ArgumentParser(description='convert csgo-data style dataset into coco-style dataset')
+parser = argparse.ArgumentParser(description='check csgo-data style dataset')
 parser.add_argument('-rp', help='the absolute path the root directory of the coco-style dataset to be checked', type=str)
 parser.add_argument('-width', help='the width in pixels of the dataset\'s images', type=int)
 parser.add_argument('-height', help='the height in pixels of the dataset\'s images', type=int)

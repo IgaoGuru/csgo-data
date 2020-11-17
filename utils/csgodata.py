@@ -90,7 +90,6 @@ def plot_bbox(img_path, bboxes, sleeptime=False):
     '''
     #load image and draw bboxes with cv2
     img = cv2.imread(img_path)
-    print(bboxes)
     for bbox in bboxes:
         img = cv2.rectangle(img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (255, 0, 255), 1)
 

@@ -5,6 +5,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 import torch
 
+from utils.csgodata import plot_bbox
+
 img_size = (1280, 720)
 TEAM_TR = 2
 TEAM_CT = 3
@@ -83,14 +85,17 @@ class  CsgoDataset(Dataset):
         self.root_path = root_path
         self.transform = transform
         self.scale_factor = scale_factor
+        self.session_lens = {}
         if classes is None:
             self.classes = self.KNOWN_CLASSES
         else:
             self.classes = classes
         for _, dirs, _ in os.walk(root_path):
             for current_dir in dirs:
+                old_len = len(self.dict_dataset)
                 update_dataset(self.root_path, current_dir, self.dict_dataset)
                 self.length = len(self.dict_dataset)
+                self.session_lens[current_dir] = (self.length, old_len)
                 if dlength:
                     if self.length >= dlength:
                         break
@@ -157,3 +162,22 @@ class  CsgoDataset(Dataset):
         val_size = int(val * len(self))
         test_size = len(self) - (train_size + val_size)
         return torch.utils.data.random_split(self, [train_size, val_size, test_size])
+
+def dataset_check(dataset, seshs):
+    sesh_keys = list(dataset.session_lens.keys())
+    for sesh_idx, sesh in enumerate(seshs):
+        sesh = sesh_keys[sesh]
+        start = dataset.session_lens[sesh][1]
+        stop = dataset.session_lens[sesh][0]
+        for idx in range(start, stop+1):
+            print(idx, idx-start)
+            img_path = dataset.get_image_path(idx)
+            bboxes = dataset[idx][1].numpy()
+            plot_bbox(img_path, bboxes)
+
+            # for idx in range(len(dataset.frame_keys)):
+            #     img_path = dataset.get_image_path(idx)
+            #     bboxes = dataset[idx][1].numpy()
+            #     plot_bbox(img_path, bboxes)
+
+
