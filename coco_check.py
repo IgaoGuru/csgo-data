@@ -154,5 +154,60 @@ def coco_coord_2pixel(coco_coords, img_size):
     y1 = bbox_center_y + (bbox_height/2)
     return list(map(int, [x0, y0, x1, y1]))
 
-coco_show_images()
+def coco_find_nonnormal():
+    jj = 0
+    fix = False
+    for _, _, lbl_path in walk(lbl_train_path):
+        for lbl_path in tqdm(lbl_path):
+            lbl_final_path = join(lbl_train_path, lbl_path)
+            bboxes = []
+
+            with open(lbl_final_path, "r") as filezin:
+                lines = filezin.readlines()
+                for line in lines:
+                    coords = [float(x) for x in line.split(" ")]
+                    ct_tr = int(coords[0])
+                    coords = coords[1:]
+                    for idx, i in enumerate(coords):
+                        if i > 1:
+                            if len(bboxes) == 0:
+                                jj += 1
+                                print(coords, jj)
+
+                            if fix:
+                                coords[idx] = 0.99999
+                    bboxes.append([ct_tr, coords[0], coords[1], coords[2], coords[3]])
+
+            if fix:
+                with open(lbl_final_path, "w+") as filezin:
+                    for bbox in bboxes:
+                        filezin.write(f"{bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]} {bbox[4]}\n")
+
+    for _, _, lbl_path in walk(lbl_val_path):
+        for lbl_path in tqdm(lbl_path):
+            lbl_final_path = join(lbl_val_path, lbl_path)
+            bboxes = []
+
+            with open(lbl_final_path, "r") as filezin:
+                lines = filezin.readlines()
+                for line in lines:
+                    coords = [float(x) for x in line.split(" ")]
+                    ct_tr = int(coords[0])
+                    coords = coords[1:]
+                    for idx, i in enumerate(coords):
+                        if i > 1:
+                            if len(bboxes) == 0:
+                                jj += 1
+                                print(coords, jj)
+
+                            if fix:
+                                coords[idx] = 0.99999
+                    bboxes.append([ct_tr, coords[0], coords[1], coords[2], coords[3]])
+
+            if fix:
+                with open(lbl_final_path, "w+") as filezin:
+                    for bbox in bboxes:
+                        filezin.write(f"{bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]} {bbox[4]}\n")
+
+coco_find_nonnormal()
 
